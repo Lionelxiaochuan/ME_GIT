@@ -5,3 +5,6 @@ And no, you cannot just take someone's life for whatever he/she expressed.
 
 Hence this "Je suis Charlie" edition.
 - #JeSuisCharlie
+
+Git is a distributed version control system.
+Git is free software.
