@@ -65,7 +65,7 @@ namespace Wpf_2
                                                                                 96, 96, PixelFormats.Bgr32, null);
                 this.colorImageBitmapRect = new Int32Rect(0, 0, colorStream.FrameWidth, colorStream.FrameHeight);
                 this.colorImageStride = colorStream.FrameWidth * colorStream.FrameBytesPerPixel;
-                ColorImageElement.Source = this.colorImageBitmap;
+                ImageImageElement.Source = this.colorImageBitmap;
 
                 kinectSensor.ColorFrameReady += kinectSensor_ColorFrameReady;
                 kinectSensor.Start();
@@ -141,7 +141,7 @@ namespace Wpf_2
 
             using (FileStream savedSnapshot = new FileStream(fileName, FileMode.CreateNew))
             {
-                BitmapSource image = (BitmapSource)ColorImageElement.Source;
+                BitmapSource image = (BitmapSource)ImageImageElement.Source;
                 JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder();
                 jpgEncoder.QualityLevel = 70;
                 jpgEncoder.Frames.Add(BitmapFrame.Create(image));
