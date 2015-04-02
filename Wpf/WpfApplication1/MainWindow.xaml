@@ -1,0 +1,11 @@
+﻿<Window x:Class="KinectApplicationFoundation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ColorImageStreamFromKinect" Height="350" Width="525">
+    <Grid>
+        <Image x:Name="DepthImageElement"></Image>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Button Content="Take Picture" Click="TakePictureButton_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
