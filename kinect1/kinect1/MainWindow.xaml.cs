@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
+using System.Windows.Forms;
+
 namespace kinect1
 {
     /// <summary>
@@ -25,8 +27,10 @@ namespace kinect1
         private WriteableBitmap colorImageBitmap;
         private Int32Rect colorImageBitmapRect;
         private int colorImageBitmapStride;
+        private Skeleton[] skeletonData;
 
-
+        bool IsBackwardGestureActive = true;
+        bool IsForwardGestureActive = true;
 
         public MainWindow()
         {
@@ -61,9 +65,17 @@ namespace kinect1
         {
             if (this.kinectsensor != null)
             {
-                //TODO:
-                ColorImageStream colorstream = this.kinectsensor.ColorStream;
+                //TODO: skeletonstream enable
+                //using parameter
+                SkeletonStream skeletonstream = kinectSensor.SkeletonStream;
+                skeletonstream.Enable();
+     
+                kinectSensor.SkeletonFrameReady += kinectSensor_SkeletonFrameReady;
+                //TODO: colorstream enable
+                //using parameter 
+                ColorImageStream colorstream = kinectsensor.ColorStream;
                 colorstream.Enable();
+               
                 this.colorImageBitmap = new WriteableBitmap(colorstream.FrameWidth, colorstream.FrameHeight, 96, 96, PixelFormats.Bgr32, null);
                 this.colorImageBitmapRect = new Int32Rect(0, 0, colorstream.FrameWidth, colorstream.FrameHeight);
                 this.colorImageBitmapStride = colorstream.FrameWidth * colorstream.FrameBytesPerPixel;
@@ -72,6 +84,84 @@ namespace kinect1
                 kinectSensor.Start();
 
             }
+        }
+
+        void kinectSensor_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
+        {
+            using (SkeletonFrame skeletonframe = e.OpenSkeletonFrame())
+            {
+                if (null != skeletonframe)
+                {
+                    this.skeletonData = new Skeleton[this.kinectsensor.SkeletonStream.FrameSkeletonArrayLength];
+                    skeletonframe.CopySkeletonDataTo( skeletonData );
+                    Skeleton skeleton = (from s in skeletonData where s.TrackingState == SkeletonTrackingState.Tracked select s).FirstOrDefault();
+                    if (null != skeleton)
+                    {
+                        SkeletonCanvas.Visibility = Visibility.Visible;
+                        ProcessGesture(skeleton);
+                    }
+                    
+                }
+
+ 
+            }
+        }
+
+        private void ProcessGesture(Skeleton skeleton)
+        {
+            Joint lefthand = (from j in skeleton.Joints where j.JointType == JointType.HandLeft select j).FirstOrDefault();
+            Joint righthand = (from j in skeleton.Joints where j.JointType == JointType.HandRight select j).FirstOrDefault();
+            Joint head = (from j in skeleton.Joints where j.JointType == JointType.Head select j).FirstOrDefault();
+
+            if (righthand.Position.X > head.Position.X + 0.45)
+            {
+                if (!this.IsBackwardGestureActive && !this.IsForwardGestureActive)
+                {
+                    this.IsForwardGestureActive = true;
+                    SendKeys.SendWait("{Right}");
+                }
+            }
+            else
+            {
+                this.IsForwardGestureActive = false;
+            }
+
+            if (lefthand.Position.X < head.Position.X - 0.45)
+            {
+                if (!this.IsBackwardGestureActive && !this.IsForwardGestureActive)
+                {
+                    this.IsBackwardGestureActive = true;
+                    SendKeys.SendWait("{Left}");
+
+                }
+            }
+            else
+            {
+                this.IsBackwardGestureActive = false;
+            }
+
+            SetEillpsePosition(EllipseHead,head,false);
+            SetEillpsePosition(EllipseLefthand, lefthand, IsBackwardGestureActive);
+            SetEillpsePosition(EllipseRighthand, righthand, IsForwardGestureActive);
+        }
+
+        private void SetEillpsePosition(Ellipse ellipse, Joint joint, bool isHighlighted)
+        {
+            ColorImagePoint colorImagePoint = kinectsensor.CoordinateMapper.MapSkeletonPointToColorPoint(joint.Position, ColorImageFormat.InfraredResolution640x480Fps30);
+            if (isHighlighted)
+            {
+                ellipse.Width = 60;
+                ellipse.Height = 60;
+                ellipse.Fill = Brushes.Green;
+            }
+            else
+            {
+                ellipse.Width = 20;
+                ellipse.Height = 20;
+                ellipse.Fill = Brushes.Red;
+            }
+            Canvas.SetLeft(ellipse, colorImagePoint.X - ellipse.ActualWidth / 2);
+            Canvas.SetTop(ellipse, colorImagePoint.Y - ellipse.ActualHeight / 2);
         }
 
         private void UninitializeKinectSensor(KinectSensor kinectSensor)
