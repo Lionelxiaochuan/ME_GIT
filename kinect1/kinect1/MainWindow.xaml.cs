@@ -24,14 +24,22 @@ namespace kinect1
     {
         //property of class 
         private KinectSensor kinectsensor;
+
         private WriteableBitmap colorImageBitmap;
         private Int32Rect colorImageBitmapRect;
         private int colorImageBitmapStride;
+
+        private WriteableBitmap depthImageBitmap;
+        private Int32Rect depthImageBitmapRect;
+        private int depthImageBitmapStride;
+
         private Skeleton[] skeletonData;
 
         bool IsBackwardGestureActive = true;
         bool IsForwardGestureActive = true;
 
+
+        //the entrance of program
         public MainWindow()
         {
             InitializeComponent();
@@ -75,13 +83,44 @@ namespace kinect1
                 //using parameter 
                 ColorImageStream colorstream = kinectsensor.ColorStream;
                 colorstream.Enable();
-               
+                //TODO: depthstream enable
+                //using parameter 
+                DepthImageStream depthstream = kinectSensor.DepthStream;
+                depthstream.Enable();
+
+                this.depthImageBitmap = new WriteableBitmap(depthstream.FrameWidth, depthstream.FrameHeight, 96, 96, PixelFormats.Gray16, null);
+                this.depthImageBitmapRect = new Int32Rect(0, 0, depthstream.FrameWidth, depthstream.FrameHeight);
+                this.depthImageBitmapStride = depthstream.FrameWidth * depthstream.FrameBytesPerPixel;
+                DepthImage.Source = this.depthImageBitmap;
+                kinectSensor.DepthFrameReady += kinectSensor_DepthFrameReady;
+
                 this.colorImageBitmap = new WriteableBitmap(colorstream.FrameWidth, colorstream.FrameHeight, 96, 96, PixelFormats.Bgr32, null);
                 this.colorImageBitmapRect = new Int32Rect(0, 0, colorstream.FrameWidth, colorstream.FrameHeight);
                 this.colorImageBitmapStride = colorstream.FrameWidth * colorstream.FrameBytesPerPixel;
                 ColorImage.Source = this.colorImageBitmap;
                 kinectSensor.ColorFrameReady += kinectSensor_ColorFrameReady;
                 kinectSensor.Start();
+
+            }
+        }
+
+        private void kinectSensor_DepthFrameReady(object sender, DepthImageFrameReadyEventArgs e)
+        {
+            using(DepthImageFrame depthFrame = e.OpenDepthImageFrame())
+            {
+                if (null != depthFrame)
+                {
+               
+                //     DepthImagePixel [] depthPixelData = new DepthImagePixel[depthFrame.PixelDataLength];
+                //     depthFrame.CopyDepthImagePixelDataTo(depthPixelData);
+                //     this.depthImageBitmap.WritePixels((this.depthImageBitmapRect, depthPixelData, this.depthImageBitmapStride, 0);
+                    short[] depthPixelData = new short[depthFrame.PixelDataLength];
+                    depthFrame.CopyPixelDataTo(depthPixelData);
+                    this.depthImageBitmap.WritePixels(this.depthImageBitmapRect,depthPixelData, this.depthImageBitmapStride, 0);
+                    //this.CreateColorDepthImage(depthFrame, depthPixelDate);
+                                                    
+
+                }
 
             }
         }
@@ -190,12 +229,14 @@ namespace kinect1
 
         private void DiscoverKinectSensor()
         {
+            //StatusChanged eventhandler 被触发
             KinectSensor.KinectSensors.StatusChanged += KinectSensors_StatusChanged;
             this.Kinect = KinectSensor.KinectSensors.FirstOrDefault(x => x.Status == KinectStatus.Connected);
         }
 
         void KinectSensors_StatusChanged(object sender, StatusChangedEventArgs e)
         {
+            //get the status of the sensor which has been connected with the laptop
             switch (e.Status)
             {
                 case KinectStatus.Connected:
@@ -206,6 +247,7 @@ namespace kinect1
                     if (this.kinectsensor == e.Sensor)
                     {
                         this.kinectsensor = null;
+                        // 我们默认只有一个kinect可以和计算机通信
                         this.kinectsensor = KinectSensor.KinectSensors.FirstOrDefault(x => x.Status == KinectStatus.Connected);
                         if (this.kinectsensor == null)
                         {
@@ -213,6 +255,7 @@ namespace kinect1
                         }
                     }
                     break;
+                    
                   
             }
         }

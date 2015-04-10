@@ -11,3 +11,16 @@ E:\codes\Lionel\documents\visual studio 2012\projects\kinect1\kinect1\obj\Debug\
 E:\codes\Lionel\documents\visual studio 2012\projects\kinect1\kinect1\obj\Debug\kinect1.csproj.GenerateResource.Cache
 E:\codes\Lionel\documents\visual studio 2012\projects\kinect1\kinect1\obj\Debug\kinect1.exe
 E:\codes\Lionel\documents\visual studio 2012\projects\kinect1\kinect1\obj\Debug\kinect1.pdb
+C:\Users\Lionel\me_git\kinect1\kinect1\bin\Debug\kinect1.exe.config
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\kinect1.exe
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\kinect1.pdb
+C:\Users\Lionel\me_git\kinect1\kinect1\bin\Debug\kinect1.exe
+C:\Users\Lionel\me_git\kinect1\kinect1\bin\Debug\kinect1.pdb
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\kinect1.csprojResolveAssemblyReference.cache
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\MainWindow.baml
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\MainWindow.g.cs
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\App.g.cs
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\kinect1_MarkupCompile.cache
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\kinect1.g.resources
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\kinect1.Properties.Resources.resources
+C:\Users\Lionel\me_git\kinect1\kinect1\obj\Debug\kinect1.csproj.GenerateResource.Cache
